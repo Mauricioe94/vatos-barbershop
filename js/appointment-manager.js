@@ -1,6 +1,12 @@
 // Gestor de citas
 class AppointmentManager {
     constructor() {
+        // 🎯 CONFIGURACIÓN DE HORARIOS DENTRO DEL CONSTRUCTOR
+        this.businessHours = {
+            start: 9,     // 9:00 AM
+            end: 19,      // 7:00 PM (hasta 19:30)
+            interval: 30  // Cada 30 minutos
+        };
         this.init();
     }
     
@@ -14,8 +20,12 @@ class AppointmentManager {
         const timeSelect = document.getElementById('time');
         timeSelect.innerHTML = '<option value="">Selecciona hora</option>';
         
-        for (let hour = businessHours.start; hour < businessHours.end; hour++) {
-            for (let minute = 0; minute < 60; minute += businessHours.interval) {
+        // 🎯 USAR this.businessHours en lugar de businessHours global
+        for (let hour = this.businessHours.start; hour <= this.businessHours.end; hour++) {
+            for (let minute = 0; minute < 60; minute += this.businessHours.interval) {
+                // Solo generar hasta las 19:30
+                if (hour === 19 && minute > 30) break;
+                
                 const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
                 const option = document.createElement('option');
                 option.value = timeString;
@@ -25,6 +35,7 @@ class AppointmentManager {
         }
     }
     
+    // ... EL RESTO DEL CÓDIGO PERMANECE IGUAL ...
     setupEventListeners() {
         // Servicios
         document.querySelectorAll('.service-option').forEach(option => {
