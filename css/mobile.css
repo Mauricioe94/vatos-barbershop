@@ -1,0 +1,190 @@
+/* Estilos móviles - Vatos Barbershop */
+
+@media (max-width: 768px) {
+    /* Container y espaciado */
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    /* Tabs de navegación */
+    .flex.justify-center.mb-8.border-b.border-gray-700 {
+        flex-wrap: wrap;
+    }
+    
+    .tab-button {
+        flex: 1;
+        min-width: 140px;
+        font-size: 0.9rem;
+        padding: 0.75rem 0.5rem;
+        text-align: center;
+    }
+    
+    /* Estadísticas - 2 columnas en móvil */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .stat-card {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .stat-number {
+        font-size: 1.25rem;
+    }
+    
+    /* Filtros apilados verticalmente */
+    .filters-grid {
+        gap: 1rem;
+    }
+    
+    /* Tarjetas de citas - diseño móvil */
+    .appointment-card {
+        padding: 0.75rem;
+    }
+    
+    .appointment-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .appointment-client {
+        font-size: 1rem;
+    }
+    
+    .appointment-status {
+        align-self: flex-start;
+    }
+    
+    /* BOTONES DE ACCIÓN - CENTRADOS Y MEJORADOS */
+    .appointment-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%;
+        align-items: center;
+    }
+    
+    .action-button {
+        width: 100%;
+        max-width: 200px;
+        justify-content: center;
+        padding: 0.75rem 1rem;
+        font-size: 0.8rem;
+    }
+    
+    /* Detalles de la cita */
+    .appointment-details {
+        margin-bottom: 1rem;
+    }
+    
+    .appointment-detail {
+        font-size: 0.8rem;
+    }
+    
+    /* Servicios en grid de 1 columna */
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Opciones de pago apiladas */
+    .payment-options {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    /* Toast notifications más pequeñas */
+    .toast {
+        max-width: calc(100vw - 2rem);
+        right: 1rem;
+        left: 1rem;
+        bottom: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Ajustes para pantallas muy pequeñas */
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .container.mx-auto.px-4.py-8 {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    
+    header.text-center.mb-12 {
+        margin-bottom: 2rem;
+    }
+    
+    h1.text-4xl.font-bold {
+        font-size: 1.875rem;
+    }
+    
+    /* Botones más compactos pero manteniendo el centrado */
+    .action-button {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.75rem;
+    }
+    
+    /* Mejorar legibilidad en móvil */
+    .appointment-detail {
+        font-size: 0.75rem;
+    }
+    
+    /* Asegurar que los botones se mantengan centrados */
+    .appointment-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* Estilos específicos para mejorar el centrado de botones */
+.appointment-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Garantizar que los botones estén siempre centrados en móvil */
+@media (max-width: 768px) {
+    .appointment-card .flex.justify-between.items-start {
+        flex-direction: column;
+    }
+    
+    .appointment-card .flex-1 {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    .appointment-card .flex.space-x-2 {
+        width: 100%;
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .appointment-card .flex.space-x-2 button {
+        width: 100%;
+        max-width: 200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+/* Mejora visual para los estados en móvil */
+.appointment-status {
+    white-space: nowrap;
+    display: inline-block;
+    text-align: center;
+}

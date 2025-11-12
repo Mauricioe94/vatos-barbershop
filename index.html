@@ -8,6 +8,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mobile.css">
 </head>
 <body class="bg-gray-900 text-white min-h-screen">
     <div class="container mx-auto px-4 py-8">
@@ -17,39 +19,37 @@
         </header>
 
         <div class="flex justify-center mb-8 border-b border-gray-700">
-            <button id="client-tab" class="border-b-2 border-yellow-400 px-6 py-3 font-medium text-yellow-400">Reservar Cita</button>
-            <button id="admin-tab" class="px-6 py-3 font-medium text-gray-400">Panel Barbero</button>
+            <button id="client-tab" class="tab-button active">Reservar Cita</button>
+            <button id="admin-tab" class="tab-button">Panel Barbero</button>
         </div>
 
         <!-- Client View -->
-        <div id="client-view">
+        <div id="client-view" class="view active">
             <div class="max-w-2xl mx-auto bg-gray-800 rounded-xl shadow-lg p-6">
                 <h2 class="text-2xl font-bold text-yellow-400 mb-6 text-center">Reserva tu Cita</h2>
                 
                 <form id="booking-form" class="space-y-6">
                     <div>
                         <label class="block text-gray-300 mb-2">Nombre Completo</label>
-                        <input type="text" id="clientName" required class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" placeholder="Tu nombre">
+                        <input type="text" id="clientName" required class="form-input" placeholder="Tu nombre">
                     </div>
-                    
-                    <!-- ELIMINADO: Campo de WhatsApp -->
                     
                     <div>
                         <label class="block text-gray-300 mb-2">Servicio</label>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="service-option bg-gray-700 p-4 rounded-lg cursor-pointer border border-gray-600" data-service="Degradado Profesional" data-price="10000">
+                        <div class="services-grid">
+                            <div class="service-option" data-service="Degradado Profesional" data-price="10000">
                                 <h3 class="font-bold text-yellow-400">Degradado Profesional</h3>
                                 <p class="text-yellow-400 mt-2">$10.000</p>
                             </div>
-                            <div class="service-option bg-gray-700 p-4 rounded-lg cursor-pointer border border-gray-600" data-service="Colorometría" data-price="45000">
+                            <div class="service-option" data-service="Colorometría" data-price="45000">
                                 <h3 class="font-bold text-yellow-400">Colorometría</h3>
                                 <p class="text-yellow-400 mt-2">$45.000</p>
                             </div>
-                            <div class="service-option bg-gray-700 p-4 rounded-lg cursor-pointer border border-gray-600" data-service="Recorte de Barba" data-price="7000">
+                            <div class="service-option" data-service="Recorte de Barba" data-price="7000">
                                 <h3 class="font-bold text-yellow-400">Recorte de Barba</h3>
                                 <p class="text-yellow-400 mt-2">$7.000</p>
                             </div>
-                            <div class="service-option bg-gray-700 p-4 rounded-lg cursor-pointer border border-gray-600" data-service="Combo Full" data-price="15000">
+                            <div class="service-option" data-service="Combo Full" data-price="15000">
                                 <h3 class="font-bold text-yellow-400">Combo Full</h3>
                                 <p class="text-yellow-400 mt-2">$15.000</p>
                             </div>
@@ -58,64 +58,61 @@
                         <input type="hidden" id="selectedPrice">
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-grid">
                         <div>
                             <label class="block text-gray-300 mb-2">Fecha</label>
-                            <input type="date" id="date" required class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg">
+                            <input type="date" id="date" required class="form-input">
                         </div>
                         <div>
                             <label class="block text-gray-300 mb-2">Hora</label>
-                            <select id="time" required class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg">
+                            <select id="time" required class="form-input">
                                 <option value="">Selecciona hora</option>
-                                <!-- Horarios generados dinámicamente cada 30 min -->
                             </select>
                         </div>
                     </div>
 
-                    <!-- Indicador de disponibilidad -->
-                    <div id="availability-indicator" class="hidden p-3 rounded-lg text-sm">
+                    <div id="availability-indicator" class="availability-indicator hidden">
                         <i class="fas fa-info-circle mr-2"></i>
                         <span id="availability-message"></span>
                     </div>
                     
                     <div>
                         <label class="block text-gray-300 mb-2">Método de Pago</label>
-                        <div class="flex space-x-6">
-                            <label class="flex items-center">
+                        <div class="payment-options">
+                            <label class="payment-option">
                                 <input type="radio" name="payment" value="Efectivo" checked class="mr-2">
                                 <span>Efectivo</span>
                             </label>
-                            <label class="flex items-center">
+                            <label class="payment-option">
                                 <input type="radio" name="payment" value="Mercado Pago" class="mr-2">
                                 <span>Mercado Pago</span>
                             </label>
                         </div>
                     </div>
 
-                    <!-- Resumen de la reserva -->
-                    <div id="booking-summary" class="hidden bg-gray-700 p-4 rounded-lg">
+                    <div id="booking-summary" class="booking-summary hidden">
                         <h3 class="font-bold text-yellow-400 mb-3">Resumen de tu Reserva</h3>
-                        <div class="space-y-2 text-sm">
-                            <div class="flex justify-between">
+                        <div class="summary-details">
+                            <div class="summary-item">
                                 <span>Servicio:</span>
                                 <span id="summary-service" class="font-bold">-</span>
                             </div>
-                            <div class="flex justify-between">
+                            <div class="summary-item">
                                 <span>Precio:</span>
                                 <span id="summary-price" class="font-bold">$0</span>
                             </div>
-                            <div class="flex justify-between">
+                            <div class="summary-item">
                                 <span>Fecha y Hora:</span>
                                 <span id="summary-datetime" class="font-bold">-</span>
                             </div>
-                            <div class="flex justify-between border-t border-gray-600 pt-2">
+                            <div class="summary-item total">
                                 <span>Total:</span>
                                 <span id="summary-total" class="font-bold text-yellow-400">$0</span>
                             </div>
                         </div>
                     </div>
                     
-                    <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 px-4 rounded-lg">
+                    <button type="submit" class="submit-button">
                         Reservar Cita
                     </button>
                 </form>
@@ -123,12 +120,11 @@
         </div>
 
         <!-- Admin View -->
-        <div id="admin-view" class="hidden">
-            <div class="bg-gray-800 rounded-xl shadow-lg p-6">
+        <div id="admin-view" class="view hidden">
+            <div class="admin-panel">
                 <h2 class="text-2xl font-bold text-yellow-400 mb-6 text-center">Panel del Barbero</h2>
                 
-                <!-- NUEVO: Sección de Notificaciones -->
-                <div class="bg-gray-700 p-4 rounded-lg mb-6">
+                <div class="notifications-section">
                     <h3 class="text-lg font-bold text-yellow-400 mb-3">
                         🔔 Notificaciones Recientes
                     </h3>
@@ -137,35 +133,33 @@
                     </div>
                 </div>
                 
-                <!-- Estadísticas rápidas -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                    <div class="bg-gray-700 p-4 rounded-lg text-center">
-                        <div class="text-2xl font-bold text-yellow-400" id="today-count">0</div>
-                        <div class="text-sm text-gray-400">Citas Hoy</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="today-count">0</div>
+                        <div class="stat-label">Citas Hoy</div>
                     </div>
-                    <div class="bg-gray-700 p-4 rounded-lg text-center">
-                        <div class="text-2xl font-bold text-green-400" id="confirmed-count">0</div>
-                        <div class="text-sm text-gray-400">Confirmadas</div>
+                    <div class="stat-card">
+                        <div class="stat-number confirmed" id="confirmed-count">0</div>
+                        <div class="stat-label">Confirmadas</div>
                     </div>
-                    <div class="bg-gray-700 p-4 rounded-lg text-center">
-                        <div class="text-2xl font-bold text-blue-400" id="completed-count">0</div>
-                        <div class="text-sm text-gray-400">Completadas</div>
+                    <div class="stat-card">
+                        <div class="stat-number completed" id="completed-count">0</div>
+                        <div class="stat-label">Completadas</div>
                     </div>
-                    <div class="bg-gray-700 p-4 rounded-lg text-center">
-                        <div class="text-2xl font-bold text-red-400" id="cancelled-count">0</div>
-                        <div class="text-sm text-gray-400">Canceladas</div>
+                    <div class="stat-card">
+                        <div class="stat-number cancelled" id="cancelled-count">0</div>
+                        <div class="stat-label">Canceladas</div>
                     </div>
                 </div>
 
-                <!-- Filtros para el barbero -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="filters-grid">
                     <div>
                         <label class="block text-gray-300 mb-2">Filtrar por Fecha</label>
-                        <input type="date" id="filter-date" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg">
+                        <input type="date" id="filter-date" class="form-input">
                     </div>
                     <div>
                         <label class="block text-gray-300 mb-2">Filtrar por Estado</label>
-                        <select id="filter-status" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg">
+                        <select id="filter-status" class="form-input">
                             <option value="">Todos los estados</option>
                             <option value="pending">Pendientes</option>
                             <option value="confirmed">Confirmadas</option>
@@ -175,14 +169,13 @@
                     </div>
                 </div>
 
-                <!-- Resumen de ingresos -->
-                <div class="bg-yellow-900 border border-yellow-600 p-4 rounded-lg mb-6">
+                <div class="revenue-section">
                     <h3 class="font-bold text-yellow-300 mb-2">Resumen de Ingresos de Hoy</h3>
-                    <div class="text-2xl font-bold text-white" id="daily-revenue">$0</div>
-                    <div class="text-sm text-yellow-200" id="revenue-breakdown"></div>
+                    <div class="revenue-amount" id="daily-revenue">$0</div>
+                    <div class="revenue-breakdown" id="revenue-breakdown"></div>
                 </div>
                 
-                <div class="mb-6">
+                <div class="appointments-section">
                     <h3 class="text-lg font-bold mb-4">Citas</h3>
                     <div id="appointments-list">
                         <p class="text-center py-4 text-gray-400">Cargando citas...</p>
@@ -192,547 +185,19 @@
         </div>
     </div>
 
-    <!-- Notificación Toast mejorada -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-gray-800 border border-gray-600 text-white p-4 rounded-lg shadow-lg hidden transition-all duration-300 max-w-sm z-50">
-        <div class="flex items-center">
-            <i id="toast-icon" class="mr-3 text-lg"></i>
+    <div id="toast" class="toast hidden">
+        <div class="toast-content">
+            <i id="toast-icon" class="toast-icon"></i>
             <div>
-                <div id="toast-title" class="font-bold"></div>
-                <div id="toast-message" class="text-sm text-gray-300"></div>
+                <div id="toast-title" class="toast-title"></div>
+                <div id="toast-message" class="toast-message"></div>
             </div>
         </div>
     </div>
 
-    <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyD89yZfOmWYVJphe08Fi3gz9tWlIsv6dE5o",
-        authDomain: "vatos-barbershop.firebaseapp.com",
-        projectId: "vatos-barbershop",
-        storageBucket: "vatos-barbershop.firebasestorage.app",
-        messagingSenderId: "358166347787",
-        appId: "1:358166347787:web:32bd07ceddef274b12c79e"
-    };
-
-        // Inicializar Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        // NUEVO: Configuración de horarios cada 30 minutos
-        const businessHours = {
-            start: 9,    // 9:00 AM
-            end: 18,     // 6:00 PM
-            interval: 30 // minutos entre turnos
-        };
-
-        // NUEVO: Generar horarios dinámicamente
-        function generateTimeSlots() {
-            const timeSelect = document.getElementById('time');
-            timeSelect.innerHTML = '<option value="">Selecciona hora</option>';
-            
-            for (let hour = businessHours.start; hour < businessHours.end; hour++) {
-                for (let minute = 0; minute < 60; minute += businessHours.interval) {
-                    const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-                    const option = document.createElement('option');
-                    option.value = timeString;
-                    option.textContent = timeString;
-                    timeSelect.appendChild(option);
-                }
-            }
-        }
-
-        // NUEVO: Sistema de recordatorios
-        class ReminderSystem {
-            constructor() {
-                this.checkReminders();
-                // Verificar cada hora
-                setInterval(() => this.checkReminders(), 60 * 60 * 1000);
-            }
-            
-            async checkReminders() {
-                const now = new Date();
-                const twoHoursFromNow = new Date(now.getTime() + 2 * 60 * 60 * 1000);
-                
-                try {
-                    const appointments = await db.collection('barber_appointments')
-                        .where('date', '==', twoHoursFromNow.toISOString().split('T')[0])
-                        .where('time', '==', this.formatTime(twoHoursFromNow))
-                        .where('status', 'in', ['pending', 'confirmed'])
-                        .where('reminderSent', '==', false)
-                        .get();
-                    
-                    for (const doc of appointments.docs) {
-                        const appointment = doc.data();
-                        await this.sendReminder(appointment);
-                        await doc.ref.update({ reminderSent: true });
-                    }
-                } catch (error) {
-                    console.error('Error en recordatorios:', error);
-                }
-            }
-            
-            formatTime(date) {
-                return date.toTimeString().slice(0, 5);
-            }
-            
-            async sendReminder(appointment) {
-                // En un sistema real, aquí integrarías con WhatsApp/Email
-                const message = `⏰ RECORDATORIO: Tu cita en Vatos BarbeShop es en 2 horas (${appointment.time})`;
-                console.log('📲 Recordatorio enviado:', message);
-                
-                // Mostrar notificación al usuario si está en la página
-                this.showBrowserNotification(appointment);
-            }
-            
-            showBrowserNotification(appointment) {
-                if ("Notification" in window && Notification.permission === "granted") {
-                    new Notification("Vatos BarbeShop - Recordatorio", {
-                        body: `Tu cita es a las ${appointment.time}`,
-                        icon: "/icon.png"
-                    });
-                }
-            }
-        }
-
-        // NUEVO: Solicitar permisos para notificaciones
-        function requestNotificationPermission() {
-            if ("Notification" in window && Notification.permission === "default") {
-                Notification.requestPermission();
-            }
-        }
-
-        // NUEVO: Notificación al barbero
-        async function notifyBarber(appointment) {
-            try {
-                await db.collection('barber_notifications').add({
-                    type: 'new_booking',
-                    appointment: appointment,
-                    barbershop: 'Vatos BarbeShop',
-                    timestamp: new Date().toISOString(),
-                    read: false
-                });
-                console.log('🔔 Notificación enviada al barbero');
-            } catch (error) {
-                console.error('Error notificando al barbero:', error);
-            }
-        }
-
-        // NUEVO: Cargar notificaciones del barbero
-        async function loadBarberNotifications() {
-            try {
-                const snapshot = await db.collection('barber_notifications')
-                    .where('barbershop', '==', 'Vatos BarbeShop')
-                    .orderBy('timestamp', 'desc')
-                    .limit(10)
-                    .get();
-                
-                const container = document.getElementById('notifications-list');
-                
-                if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-gray-400">No hay notificaciones recientes</p>';
-                    return;
-                }
-                
-                container.innerHTML = '';
-                snapshot.forEach(doc => {
-                    const notification = doc.data();
-                    const notificationElement = createNotificationElement(notification, doc.id);
-                    container.appendChild(notificationElement);
-                });
-            } catch (error) {
-                console.error('Error cargando notificaciones:', error);
-            }
-        }
-
-        // NUEVO: Crear elemento de notificación
-        function createNotificationElement(notification, id) {
-            const div = document.createElement('div');
-            div.className = 'bg-gray-600 p-3 rounded-lg mb-2';
-            div.innerHTML = `
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="font-bold">📅 Nueva reserva de ${notification.appointment.clientName}</p>
-                        <p class="text-sm text-gray-300">
-                            ${notification.appointment.service} - ${notification.appointment.date} ${notification.appointment.time}
-                        </p>
-                    </div>
-                    <button onclick="markNotificationRead('${id}')" class="text-gray-400 hover:text-white">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
-            return div;
-        }
-
-        // NUEVO: Marcar notificación como leída
-        async function markNotificationRead(notificationId) {
-            try {
-                await db.collection('barber_notifications').doc(notificationId).delete();
-                loadBarberNotifications();
-            } catch (error) {
-                console.error('Error marcando notificación:', error);
-            }
-        }
-
-        // Mapeo de precios de servicios
-        const servicePrices = {
-            'Degradado Profesional': 10000,
-            'Colorometría': 45000,
-            'Recorte de Barba': 7000,
-            'Combo Full': 15000
-        };
-
-        // Inicializar sistemas
-        generateTimeSlots();
-        const reminderSystem = new ReminderSystem();
-
-        // Servicios - MEJORADO
-        document.querySelectorAll('.service-option').forEach(option => {
-            option.addEventListener('click', function() {
-                document.querySelectorAll('.service-option').forEach(opt => {
-                    opt.classList.remove('border-yellow-400', 'bg-gray-600');
-                });
-                this.classList.add('border-yellow-400', 'bg-gray-600');
-                document.getElementById('selectedService').value = this.getAttribute('data-service');
-                document.getElementById('selectedPrice').value = this.getAttribute('data-price');
-                
-                updateBookingSummary();
-            });
-        });
-
-        // Verificar disponibilidad cuando cambia fecha/hora
-        document.getElementById('date').addEventListener('change', checkAvailability);
-        document.getElementById('time').addEventListener('change', checkAvailability);
-
-        // Función para verificar disponibilidad
-        async function checkAvailability() {
-            const date = document.getElementById('date').value;
-            const time = document.getElementById('time').value;
-            const indicator = document.getElementById('availability-indicator');
-            
-            if (!date || !time) {
-                indicator.classList.add('hidden');
-                return;
-            }
-
-            try {
-                const snapshot = await db.collection('barber_appointments')
-                    .where('barbershop', '==', 'Vatos BarbeShop')
-                    .where('date', '==', date)
-                    .where('time', '==', time)
-                    .get();
-
-                if (snapshot.empty) {
-                    indicator.classList.remove('hidden');
-                    indicator.classList.remove('bg-red-900', 'border-red-600');
-                    indicator.classList.add('bg-green-900', 'border-green-600');
-                    document.getElementById('availability-message').textContent = '✅ Horario disponible';
-                } else {
-                    indicator.classList.remove('hidden');
-                    indicator.classList.remove('bg-green-900', 'border-green-600');
-                    indicator.classList.add('bg-red-900', 'border-red-600');
-                    document.getElementById('availability-message').textContent = '❌ Horario ocupado, elige otro';
-                }
-            } catch (error) {
-                console.error('Error verificando disponibilidad:', error);
-            }
-        }
-
-        // Función para actualizar resumen de reserva
-        function updateBookingSummary() {
-            const service = document.getElementById('selectedService').value;
-            const price = document.getElementById('selectedPrice').value;
-            const date = document.getElementById('date').value;
-            const time = document.getElementById('time').value;
-            const summary = document.getElementById('booking-summary');
-
-            if (service && date && time) {
-                summary.classList.remove('hidden');
-                document.getElementById('summary-service').textContent = service;
-                document.getElementById('summary-price').textContent = `$${parseInt(price).toLocaleString()}`;
-                document.getElementById('summary-datetime').textContent = `${date} a las ${time}`;
-                document.getElementById('summary-total').textContent = `$${parseInt(price).toLocaleString()}`;
-            } else {
-                summary.classList.add('hidden');
-            }
-        }
-
-        // Tabs
-        document.getElementById('client-tab').addEventListener('click', () => switchTab('client'));
-        document.getElementById('admin-tab').addEventListener('click', () => switchTab('admin'));
-
-        function switchTab(tab) {
-            if (tab === 'client') {
-                document.getElementById('client-view').classList.remove('hidden');
-                document.getElementById('admin-view').classList.add('hidden');
-                document.getElementById('client-tab').classList.add('border-yellow-400', 'text-yellow-400');
-                document.getElementById('admin-tab').classList.remove('border-yellow-400', 'text-yellow-400');
-                document.getElementById('admin-tab').classList.add('text-gray-400');
-            } else {
-                document.getElementById('client-view').classList.add('hidden');
-                document.getElementById('admin-view').classList.remove('hidden');
-                document.getElementById('admin-tab').classList.add('border-yellow-400', 'text-yellow-400');
-                document.getElementById('client-tab').classList.remove('border-yellow-400', 'text-yellow-400');
-                document.getElementById('client-tab').classList.add('text-gray-400');
-                loadAppointments();
-                loadBarberNotifications(); // NUEVO: Cargar notificaciones
-            }
-        }
-
-        // NUEVO: Reservar cita - Flujo mejorado
-        document.getElementById('booking-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const appointment = {
-                clientName: document.getElementById('clientName').value,
-                service: document.getElementById('selectedService').value,
-                price: document.getElementById('selectedPrice').value,
-                date: document.getElementById('date').value,
-                time: document.getElementById('time').value,
-                payment: document.querySelector('input[name="payment"]:checked').value,
-                status: 'pending',
-                timestamp: new Date().toISOString(),
-                barbershop: "Vatos BarbeShop",
-                reminderSent: false // Para controlar recordatorios
-            };
-
-            try {
-                // 1. Guardar en la base de datos
-                await db.collection('barber_appointments').add(appointment);
-                
-                // 2. Notificar al barbero
-                await notifyBarber(appointment);
-                
-                // 3. Mostrar confirmación al usuario
-                showToast('success', '¡Cita Reservada!', 
-                    `Te esperamos el ${appointment.date} a las ${appointment.time}. 
-                     Recibirás un recordatorio 2 horas antes.`);
-                
-                // 4. Reiniciar formulario
-                this.reset();
-                document.querySelectorAll('.service-option').forEach(opt => {
-                    opt.classList.remove('border-yellow-400', 'bg-gray-600');
-                });
-                document.getElementById('booking-summary').classList.add('hidden');
-                document.getElementById('availability-indicator').classList.add('hidden');
-                
-                // 5. Solicitar permisos para recordatorios
-                requestNotificationPermission();
-                
-            } catch (error) {
-                showToast('error', 'Error', 'No se pudo reservar la cita: ' + error.message);
-            }
-        });
-
-        // Cargar citas - MEJORADO con filtros
-        async function loadAppointments() {
-            const list = document.getElementById('appointments-list');
-            list.innerHTML = '<p class="text-center py-4">Cargando citas...</p>';
-
-            try {
-                let query = db.collection('barber_appointments')
-                    .where('barbershop', '==', 'Vatos BarbeShop');
-
-                const filterDate = document.getElementById('filter-date').value;
-                const filterStatus = document.getElementById('filter-status').value;
-
-                if (filterDate) {
-                    query = query.where('date', '==', filterDate);
-                }
-
-                if (filterStatus) {
-                    query = query.where('status', '==', filterStatus);
-                }
-
-                const snapshot = await query.get();
-
-                if (snapshot.empty) {
-                    list.innerHTML = '<p class="text-center py-4 text-gray-400">No hay citas con los filtros seleccionados</p>';
-                    updateStats([]);
-                    updateRevenue([]);
-                    return;
-                }
-
-                list.innerHTML = '';
-                const appointments = [];
-                const today = new Date().toISOString().split('T')[0];
-                
-                snapshot.forEach(doc => {
-                    const appointment = doc.data();
-                    appointment.id = doc.id;
-                    appointments.push(appointment);
-                    
-                    if (!filterDate || appointment.date === (filterDate || today)) {
-                        renderAppointment(appointment, list);
-                    }
-                });
-
-                if (list.innerHTML === '') {
-                    list.innerHTML = '<p class="text-center py-4 text-gray-400">No hay citas con los filtros seleccionados</p>';
-                }
-
-                updateStats(appointments);
-                updateRevenue(appointments);
-
-            } catch (error) {
-                list.innerHTML = '<p class="text-center py-4 text-red-400">Error cargando citas</p>';
-                console.error(error);
-            }
-        }
-
-        // Función para actualizar estadísticas
-        function updateStats(appointments) {
-            const today = new Date().toISOString().split('T')[0];
-            const filterDate = document.getElementById('filter-date').value || today;
-            
-            const stats = {
-                today: 0,
-                confirmed: 0,
-                completed: 0,
-                cancelled: 0
-            };
-            
-            appointments.forEach(appt => {
-                if (appt.date === filterDate) stats.today++;
-                if (appt.status === 'confirmed') stats.confirmed++;
-                if (appt.status === 'completed') stats.completed++;
-                if (appt.status === 'cancelled') stats.cancelled++;
-            });
-            
-            document.getElementById('today-count').textContent = stats.today;
-            document.getElementById('confirmed-count').textContent = stats.confirmed;
-            document.getElementById('completed-count').textContent = stats.completed;
-            document.getElementById('cancelled-count').textContent = stats.cancelled;
-        }
-
-        // Función para calcular ingresos
-        function updateRevenue(appointments) {
-            const today = new Date().toISOString().split('T')[0];
-            const filterDate = document.getElementById('filter-date').value || today;
-            
-            let totalRevenue = 0;
-            const serviceCount = {};
-            
-            appointments.forEach(appt => {
-                if (appt.date === filterDate && appt.status === 'completed' && appt.price) {
-                    totalRevenue += parseInt(appt.price);
-                    
-                    if (appt.service) {
-                        serviceCount[appt.service] = (serviceCount[appt.service] || 0) + 1;
-                    }
-                }
-            });
-            
-            document.getElementById('daily-revenue').textContent = `$${totalRevenue.toLocaleString()}`;
-            
-            const breakdown = Object.entries(serviceCount)
-                .map(([service, count]) => `${service}: ${count}`)
-                .join(' • ');
-            
-            document.getElementById('revenue-breakdown').textContent = 
-                breakdown || 'No hay servicios completados hoy';
-        }
-
-        // Renderizar cita - MEJORADO
-        function renderAppointment(appointment, container) {
-            const statusColors = {
-                'pending': 'bg-yellow-600',
-                'confirmed': 'bg-green-600',
-                'completed': 'bg-blue-600',
-                'cancelled': 'bg-red-600'
-            };
-
-            const statusIcons = {
-                'pending': '⏳',
-                'confirmed': '✅',
-                'completed': '🎯',
-                'cancelled': '❌'
-            };
-
-            const div = document.createElement('div');
-            div.className = 'bg-gray-700 p-4 rounded-lg mb-4';
-            div.innerHTML = `
-                <div class="flex justify-between items-start">
-                    <div class="flex-1">
-                        <div class="flex items-center mb-2">
-                            <h4 class="font-bold text-lg">${appointment.clientName}</h4>
-                            <span class="ml-2 px-2 py-1 text-xs rounded ${statusColors[appointment.status] || 'bg-gray-600'}">
-                                ${statusIcons[appointment.status]} ${appointment.status}
-                            </span>
-                        </div>
-                        <p class="text-sm text-gray-300">
-                            <i class="fas fa-cut mr-1"></i>${appointment.service} - $${parseInt(appointment.price || 0).toLocaleString()}
-                        </p>
-                        <p class="text-sm text-gray-300">
-                            <i class="fas fa-clock mr-1"></i>${appointment.date} a las ${appointment.time}
-                        </p>
-                        <p class="text-sm text-gray-300">
-                            <i class="fas fa-money-bill mr-1"></i>${appointment.payment}
-                        </p>
-                    </div>
-                    <div class="flex space-x-2 ml-4">
-                        <button onclick="updateStatus('${appointment.id}', 'confirmed')" class="bg-green-600 hover:bg-green-700 px-3 py-2 rounded text-sm transition-colors">
-                            <i class="fas fa-check mr-1"></i>Confirmar
-                        </button>
-                        <button onclick="updateStatus('${appointment.id}', 'completed')" class="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded text-sm transition-colors">
-                            <i class="fas fa-flag-checkered mr-1"></i>Completar
-                        </button>
-                        <button onclick="updateStatus('${appointment.id}', 'cancelled')" class="bg-red-600 hover:bg-red-700 px-3 py-2 rounded text-sm transition-colors">
-                            <i class="fas fa-times mr-1"></i>Cancelar
-                        </button>
-                    </div>
-                </div>
-            `;
-            container.appendChild(div);
-        }
-
-        // Función para mostrar notificaciones Toast
-        function showToast(type, title, message) {
-            const toast = document.getElementById('toast');
-            const toastIcon = document.getElementById('toast-icon');
-            const toastTitle = document.getElementById('toast-title');
-            const toastMessage = document.getElementById('toast-message');
-
-            if (type === 'success') {
-                toastIcon.className = 'fas fa-check-circle text-green-400';
-                toast.classList.add('border-green-600');
-            } else {
-                toastIcon.className = 'fas fa-exclamation-circle text-red-400';
-                toast.classList.add('border-red-600');
-            }
-
-            toastTitle.textContent = title;
-            toastMessage.textContent = message;
-
-            toast.classList.remove('hidden');
-            toast.classList.add('flex');
-
-            setTimeout(() => {
-                toast.classList.add('hidden');
-                toast.classList.remove('flex', 'border-green-600', 'border-red-600');
-            }, 5000);
-        }
-
-        // Actualizar estado - MEJORADO con notificación
-        async function updateStatus(appointmentId, newStatus) {
-            try {
-                await db.collection('barber_appointments').doc(appointmentId).update({
-                    status: newStatus
-                });
-                
-                showToast('success', 'Estado Actualizado', `Cita marcada como ${newStatus}`);
-                loadAppointments();
-            } catch (error) {
-                showToast('error', 'Error', 'No se pudo actualizar el estado: ' + error.message);
-            }
-        }
-
-        // Event listeners para filtros
-        document.getElementById('filter-date').addEventListener('change', loadAppointments);
-        document.getElementById('filter-status').addEventListener('change', loadAppointments);
-
-        // Fecha mínima = hoy
-        document.getElementById('date').min = new Date().toISOString().split('T')[0];
-        document.getElementById('filter-date').value = new Date().toISOString().split('T')[0];
-    </script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/reminder-system.js"></script>
+    <script src="js/appointment-manager.js"></script>
+    <script src="js/ui-manager.js"></script>
 </body>
 </html>

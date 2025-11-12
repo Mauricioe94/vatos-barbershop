@@ -1,0 +1,434 @@
+/* Estilos base - Vatos Barbershop */
+
+/* Variables de colores */
+:root {
+    --primary-yellow: #f59e0b;
+    --dark-gray: #1f2937;
+    --medium-gray: #374151;
+    --light-gray: #6b7280;
+    --success-green: #10b981;
+    --warning-yellow: #f59e0b;
+    --error-red: #ef4444;
+    --info-blue: #3b82f6;
+}
+
+/* Utilidades generales */
+.tab-button {
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    border-bottom-width: 2px;
+    transition: all 0.3s ease;
+}
+
+.tab-button.active {
+    border-color: var(--primary-yellow);
+    color: var(--primary-yellow);
+}
+
+.tab-button:not(.active) {
+    border-color: transparent;
+    color: var(--light-gray);
+}
+
+.view {
+    transition: opacity 0.3s ease;
+}
+
+.view.hidden {
+    display: none;
+}
+
+.view.active {
+    display: block;
+}
+
+/* Formularios */
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: var(--medium-gray);
+    border: 1px solid var(--light-gray);
+    border-radius: 0.5rem;
+    color: white;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    border-color: var(--primary-yellow);
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.service-option {
+    background-color: var(--medium-gray);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    border: 1px solid var(--light-gray);
+    transition: all 0.3s ease;
+}
+
+.service-option:hover {
+    border-color: var(--primary-yellow);
+    background-color: #4b5563;
+}
+
+.service-option.selected {
+    border-color: var(--primary-yellow);
+    background-color: #4b5563;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.payment-options {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.payment-option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* Indicador de disponibilidad */
+.availability-indicator {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.availability-indicator.available {
+    background-color: rgba(16, 185, 129, 0.2);
+    border: 1px solid var(--success-green);
+    color: var(--success-green);
+}
+
+.availability-indicator.unavailable {
+    background-color: rgba(239, 68, 68, 0.2);
+    border: 1px solid var(--error-red);
+    color: var(--error-red);
+}
+
+/* Resumen de reserva */
+.booking-summary {
+    background-color: var(--medium-gray);
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.summary-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.summary-item.total {
+    border-top: 1px solid var(--light-gray);
+    padding-top: 0.5rem;
+    font-weight: bold;
+}
+
+/* Botón de envío */
+.submit-button {
+    width: 100%;
+    background-color: var(--primary-yellow);
+    color: #1f2937;
+    font-weight: bold;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.submit-button:hover {
+    background-color: #eab308;
+    transform: translateY(-1px);
+}
+
+/* Panel de administración */
+.admin-panel {
+    background-color: var(--medium-gray);
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.notifications-section {
+    background-color: var(--dark-gray);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.stat-card {
+    background-color: var(--dark-gray);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.stat-number.confirmed {
+    color: var(--success-green);
+}
+
+.stat-number.completed {
+    color: var(--info-blue);
+}
+
+.stat-number.cancelled {
+    color: var(--error-red);
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--light-gray);
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .filters-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.revenue-section {
+    background-color: rgba(245, 158, 11, 0.2);
+    border: 1px solid var(--primary-yellow);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.revenue-amount {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+.revenue-breakdown {
+    font-size: 0.875rem;
+    color: #fcd34d;
+}
+
+.appointments-section {
+    margin-bottom: 1.5rem;
+}
+
+/* Tarjetas de citas */
+.appointment-card {
+    background-color: var(--dark-gray);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.appointment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.appointment-client {
+    font-size: 1.125rem;
+    font-weight: bold;
+}
+
+.appointment-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+.appointment-status.pending {
+    background-color: var(--warning-yellow);
+    color: #1f2937;
+}
+
+.appointment-status.confirmed {
+    background-color: var(--success-green);
+    color: white;
+}
+
+.appointment-status.completed {
+    background-color: var(--info-blue);
+    color: white;
+}
+
+.appointment-status.cancelled {
+    background-color: var(--error-red);
+    color: white;
+}
+
+.appointment-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.appointment-detail {
+    font-size: 0.875rem;
+    color: var(--light-gray);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.appointment-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.action-button {
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.action-button.confirm {
+    background-color: var(--success-green);
+    color: white;
+}
+
+.action-button.complete {
+    background-color: var(--info-blue);
+    color: white;
+}
+
+.action-button.cancel {
+    background-color: var(--error-red);
+    color: white;
+}
+
+.action-button:hover {
+    transform: translateY(-1px);
+    opacity: 0.9;
+}
+
+/* Notificaciones Toast */
+.toast {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    background-color: var(--dark-gray);
+    border: 1px solid var(--light-gray);
+    color: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    max-width: 20rem;
+    z-index: 50;
+    transition: all 0.3s ease;
+}
+
+.toast.hidden {
+    display: none;
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+}
+
+.toast-icon {
+    margin-right: 0.75rem;
+    font-size: 1.125rem;
+}
+
+.toast-title {
+    font-weight: bold;
+}
+
+.toast-message {
+    font-size: 0.875rem;
+    color: var(--light-gray);
+}
+
+/* Asegurar que solo un panel esté visible a la vez */
+#client-view,
+#admin-view {
+    transition: opacity 0.3s ease-in-out;
+}
+
+#client-view.hidden,
+#admin-view.hidden {
+    display: none !important;
+}
+
+#client-view:not(.hidden),
+#admin-view:not(.hidden) {
+    display: block;
+}
+
+/* Clases para las pestañas activas */
+.tab-button.active {
+    border-bottom-color: #f59e0b;
+    color: #f59e0b;
+}
+
+.tab-button:not(.active) {
+    border-bottom-color: transparent;
+    color: #6b7280;
+}
