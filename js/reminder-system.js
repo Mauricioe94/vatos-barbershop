@@ -65,7 +65,7 @@ Te recordamos que tenés una cita con nosotros:
 💰 *Precio:* $${parseInt(appointment.price).toLocaleString()}
 
 📍 *Dirección:* Quinquela Martin 714
-📞 *Teléfono:* 11 5424-3540
+📞 *Teléfono:* 11 78918706
 
 *Importante:*
 - Llegá 5 minutos antes
@@ -107,7 +107,7 @@ function requestNotificationPermission() {
 
 // Configuración del barbero - DATOS REALES
 const BARBER_CONFIG = {
-    whatsapp: "+5491154243540", // NÚMERO REAL DEL BARBERO
+    whatsapp: "+5491178918706", // NÚMERO REAL DEL BARBERO
     name: "Vatos Barber Shop"
 };
 
@@ -166,7 +166,7 @@ function formatBarberMessage(appointment) {
 💳 *Pago:* ${appointment.payment}
 
 📍 *Dirección:* Quinquela Martin 714
-📞 *Teléfono:* 11 5424-3540
+📞 *Teléfono:* 11 7891-8706
 
 _Reserva realizada: ${new Date().toLocaleString('es-AR')}_`;
 }

@@ -175,7 +175,8 @@ class AppointmentManager {
             status: 'pending',
             timestamp: new Date().toISOString(),
             barbershop: "Vatos BarbeShop",
-            reminderSent: false
+            reminderSent: false,
+            archived: false // 🆕 NUEVO CAMPO: Para controlar visibilidad
         };
         
         try {
@@ -203,13 +204,87 @@ class AppointmentManager {
         }
     }
     
+    // 🆕 NUEVA FUNCIÓN: Ordenar citas - más recientes primero
+    ordenarCitasRecientesPrimero(citas) {
+        return citas.sort((a, b) => {
+            // Crear objetos Date combinando fecha + hora
+            const fechaHoraA = new Date(`${a.date} ${a.time}`);
+            const fechaHoraB = new Date(`${b.date} ${b.time}`);
+            
+            // Orden DESCENDENTE (más reciente primero)
+            return fechaHoraB - fechaHoraA;
+        });
+    }
+
+    // 🆕 NUEVA FUNCIÓN: Enviar WhatsApp de confirmación al cliente
+    async enviarWhatsAppConfirmacion(appointment) {
+        try {
+            const mensaje = `✅ *Confirmación de Cita - Vatos BarbeShop*
+
+Hola ${appointment.clientName}! 
+
+Te confirmamos tu cita para:
+📅 *Fecha:* ${appointment.date}
+⏰ *Hora:* ${appointment.time}
+✂️ *Servicio:* ${appointment.service}
+
+¡Te esperamos en Vatos BarbeShop! 
+Por favor llegá puntual.
+
+*Saludos cordiales,* 
+*El equipo Vatos BarbeShop*`;
+
+            // Usar tu función existente de WhatsApp o implementar una nueva
+            await this.enviarMensajeWhatsApp(appointment.clientWhatsApp, mensaje);
+            
+            return true;
+        } catch (error) {
+            console.error('Error enviando WhatsApp de confirmación:', error);
+            return false;
+        }
+    }
+
+    // 🆕 NUEVA FUNCIÓN: Enviar mensaje WhatsApp (puedes adaptarla a tu sistema)
+    async enviarMensajeWhatsApp(numero, mensaje) {
+        // Aquí integras con tu API de WhatsApp (Twilio, WhatsApp Business API, etc.)
+        const urlWhatsApp = `https://api.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`;
+        
+        // Opción 1: Abrir en nueva pestaña
+        window.open(urlWhatsApp, '_blank');
+        
+        // Opción 2: Si tienes API backend para enviar automáticamente
+        /*
+        const response = await fetch('/api/send-whatsapp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ to: numero, message: mensaje })
+        });
+        return await response.json();
+        */
+    }
+
+    // 🆕 NUEVA FUNCIÓN: Archivar cita (eliminar de vista pero mantener en BD)
+    async archivarCita(appointmentId) {
+        try {
+            await db.collection('barber_appointments').doc(appointmentId).update({
+                archived: true,
+                archivedAt: new Date().toISOString()
+            });
+            return true;
+        } catch (error) {
+            console.error('Error archivando cita:', error);
+            return false;
+        }
+    }
+    
     async loadAppointments() {
         const list = document.getElementById('appointments-list');
         list.innerHTML = '<p class="text-center py-4">Cargando citas...</p>';
         
         try {
             let query = db.collection('barber_appointments')
-                .where('barbershop', '==', 'Vatos BarbeShop');
+                .where('barbershop', '==', 'Vatos BarbeShop')
+                .where('archived', '==', false); // 🆕 SOLO CITAS NO ARCHIVADAS
             
             const filterDate = document.getElementById('filter-date').value;
             const filterStatus = document.getElementById('filter-status').value;
@@ -239,7 +314,13 @@ class AppointmentManager {
                 const appointment = doc.data();
                 appointment.id = doc.id;
                 appointments.push(appointment);
-                
+            });
+            
+            // 🎯 MEJORA APLICADA AQUÍ: Ordenar citas antes de mostrar
+            const citasOrdenadas = this.ordenarCitasRecientesPrimero(appointments);
+            
+            // Ahora renderizar las citas ordenadas
+            citasOrdenadas.forEach(appointment => {
                 if (!filterDate || appointment.date === (filterDate || today)) {
                     this.renderAppointment(appointment, list);
                 }
@@ -249,8 +330,8 @@ class AppointmentManager {
                 list.innerHTML = '<p class="text-center py-4 text-gray-400">No hay citas con los filtros seleccionados</p>';
             }
             
-            this.updateStats(appointments);
-            this.updateRevenue(appointments);
+            this.updateStats(citasOrdenadas);
+            this.updateRevenue(citasOrdenadas);
             
         } catch (error) {
             list.innerHTML = '<p class="text-center py-4 text-red-400">Error cargando citas</p>';
@@ -348,32 +429,118 @@ class AppointmentManager {
                 </p>
             </div>
             <div class="appointment-actions">
-                <button onclick="updateAppointmentStatus('${appointment.id}', 'confirmed')" class="action-button confirm">
+                <button onclick="appointmentManager.confirmarCita('${appointment.id}')" class="action-button confirm">
                     <i class="fas fa-check"></i>Confirmar
                 </button>
-                <button onclick="updateAppointmentStatus('${appointment.id}', 'completed')" class="action-button complete">
+                <button onclick="appointmentManager.completarCita('${appointment.id}')" class="action-button complete">
                     <i class="fas fa-flag-checkered"></i>Completar
                 </button>
-                <button onclick="updateAppointmentStatus('${appointment.id}', 'cancelled')" class="action-button cancel">
+                <button onclick="appointmentManager.cancelarCita('${appointment.id}')" class="action-button cancel">
                     <i class="fas fa-times"></i>Cancelar
                 </button>
             </div>
         `;
         container.appendChild(div);
     }
+
+    // 🆕 NUEVA FUNCIÓN: Confirmar cita + enviar WhatsApp
+    async confirmarCita(appointmentId) {
+        try {
+            // 1. Obtener datos de la cita
+            const doc = await db.collection('barber_appointments').doc(appointmentId).get();
+            const appointment = doc.data();
+            
+            // 2. Actualizar estado a "confirmed"
+            await db.collection('barber_appointments').doc(appointmentId).update({
+                status: 'confirmed',
+                confirmedAt: new Date().toISOString()
+            });
+            
+            // 3. Enviar WhatsApp de confirmación
+            const whatsappEnviado = await this.enviarWhatsAppConfirmacion(appointment);
+            
+            // 4. Mostrar mensaje de éxito
+            if (whatsappEnviado) {
+                showToast('success', 'Cita Confirmada', '✅ Estado actualizado y WhatsApp enviado al cliente');
+            } else {
+                showToast('success', 'Cita Confirmada', '✅ Estado actualizado (Error enviando WhatsApp)');
+            }
+            
+            // 5. Recargar la lista
+            this.loadAppointments();
+            
+        } catch (error) {
+            showToast('error', 'Error', 'No se pudo confirmar la cita: ' + error.message);
+        }
+    }
+
+    // 🆕 NUEVA FUNCIÓN: Completar cita + archivar
+    async completarCita(appointmentId) {
+        try {
+            // 1. Actualizar estado a "completed"
+            await db.collection('barber_appointments').doc(appointmentId).update({
+                status: 'completed',
+                completedAt: new Date().toISOString()
+            });
+            
+            // 2. Archivar automáticamente después de 5 segundos (para que vea la confirmación)
+            setTimeout(async () => {
+                await this.archivarCita(appointmentId);
+                this.loadAppointments();
+            }, 5000);
+            
+            showToast('success', 'Servicio Completado', '✅ Cita marcada como completada y se archivará automáticamente');
+            
+            // 3. Recargar lista inmediatamente
+            this.loadAppointments();
+            
+        } catch (error) {
+            showToast('error', 'Error', 'No se pudo completar la cita: ' + error.message);
+        }
+    }
+
+    // 🆕 NUEVA FUNCIÓN: Cancelar cita + archivar
+    async cancelarCita(appointmentId) {
+        if (!confirm('¿Estás seguro de que querés cancelar esta cita?')) {
+            return;
+        }
+        
+        try {
+            // 1. Actualizar estado a "cancelled"
+            await db.collection('barber_appointments').doc(appointmentId).update({
+                status: 'cancelled',
+                cancelledAt: new Date().toISOString()
+            });
+            
+            // 2. Archivar automáticamente
+            await this.archivarCita(appointmentId);
+            
+            showToast('success', 'Cita Cancelada', '❌ Cita cancelada y archivada');
+            
+            // 3. Recargar lista
+            this.loadAppointments();
+            
+        } catch (error) {
+            showToast('error', 'Error', 'No se pudo cancelar la cita: ' + error.message);
+        }
+    }
 }
 
-// Actualizar estado de cita
+// Función global para mantener compatibilidad (opcional)
 async function updateAppointmentStatus(appointmentId, newStatus) {
-    try {
-        await db.collection('barber_appointments').doc(appointmentId).update({
-            status: newStatus
-        });
-        
-        showToast('success', 'Estado Actualizado', `Cita marcada como ${newStatus}`);
-        appointmentManager.loadAppointments();
-    } catch (error) {
-        showToast('error', 'Error', 'No se pudo actualizar el estado: ' + error.message);
+    // Redirigir a las nuevas funciones específicas
+    switch(newStatus) {
+        case 'confirmed':
+            appointmentManager.confirmarCita(appointmentId);
+            break;
+        case 'completed':
+            appointmentManager.completarCita(appointmentId);
+            break;
+        case 'cancelled':
+            appointmentManager.cancelarCita(appointmentId);
+            break;
+        default:
+            showToast('error', 'Error', 'Estado no reconocido');
     }
 }
 
