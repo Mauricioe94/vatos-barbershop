@@ -33,6 +33,16 @@
                         <label class="block text-gray-300 mb-2">Nombre Completo</label>
                         <input type="text" id="clientName" required class="form-input" placeholder="Tu nombre">
                     </div>
+
+                    <div>
+                        <label class="block text-gray-300 mb-2">Número de WhatsApp</label>
+                        <input type="tel" id="clientWhatsApp" required 
+                               class="form-input" 
+                               placeholder="11 1234-5678"
+                               pattern="[0-9\s\-]{8,}"
+                               title="Ingresá tu número de WhatsApp sin 15 (ej: 11 1234-5678)">
+                        <p class="text-xs text-gray-400 mt-1">Ingresá tu número con código de área. Ej: 11 1234-5678</p>
+                    </div>
                     
                     <div>
                         <label class="block text-gray-300 mb-2">Servicio</label>
@@ -194,6 +204,37 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal de Login para Barbero -->
+<div id="admin-login" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-gray-800 p-6 rounded-xl max-w-md w-full mx-auto">
+        <div class="text-center mb-6">
+            <h3 class="text-2xl font-bold text-yellow-400 mb-2">Acceso Barbero</h3>
+            <p class="text-gray-400">Ingresá el código de acceso</p>
+        </div>
+        
+        <div class="space-y-4">
+            <div>
+                <input type="password" id="admin-code" 
+                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white text-center text-lg font-mono"
+                       placeholder="••••••••••"
+                       autocomplete="off"
+                       onkeypress="if(event.key === 'Enter') verifyAdminAccess()">
+            </div>
+            
+            <div class="flex gap-3">
+                <button onclick="verifyAdminAccess()" 
+                        class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 px-4 rounded-lg transition-colors">
+                    Acceder
+                </button>
+                <button onclick="uiManager.hideAdminLogin(); uiManager.showClientView();" 
+                        class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-3 px-4 rounded-lg transition-colors">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
     <script src="js/firebase-config.js"></script>
     <script src="js/reminder-system.js"></script>

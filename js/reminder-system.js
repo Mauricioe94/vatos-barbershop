@@ -33,18 +33,65 @@ class ReminderSystem {
     }
     
     async sendReminder(appointment) {
-        // En un sistema real, aquí integrarías con WhatsApp/Email
-        const message = `⏰ RECORDATORIO: Tu cita en Vatos BarbeShop es en 2 horas (${appointment.time})`;
-        console.log('📲 Recordatorio enviado:', message);
+        if (!appointment.clientWhatsApp) {
+            console.warn('⚠️ No hay WhatsApp para enviar recordatorio a:', appointment.clientName);
+            return;
+        }
         
-        // Mostrar notificación al usuario si está en la página
+        const message = this.formatReminderMessage(appointment);
+        
+        // En un sistema real, aquí integrarías con la API de WhatsApp
+        console.log('📲 Recordatorio WhatsApp para:', appointment.clientName);
+        console.log('📱 Número:', appointment.clientWhatsApp);
+        console.log('💬 Mensaje:', message);
+        
+        // Simular envío (en producción conectar con API de WhatsApp)
+        this.simulateWhatsAppSend(appointment.clientWhatsApp, message);
+        
+        // Mostrar notificación en navegador también
         this.showBrowserNotification(appointment);
+    }
+    
+    formatReminderMessage(appointment) {
+        return `🪒 *Vatos Barbershop - Recordatorio*
+
+Hola ${appointment.clientName}! 
+
+Te recordamos que tenés una cita con nosotros:
+
+📅 *Fecha:* ${appointment.date}
+⏰ *Hora:* ${appointment.time} hs
+✂️ *Servicio:* ${appointment.service}
+💰 *Precio:* $${parseInt(appointment.price).toLocaleString()}
+
+📍 *Dirección:* [Calle Falsa 1234]
+📞 *Teléfono:* [1154243540]
+
+*Importante:*
+- Llegá 5 minutos antes
+- Recordá que podés cancelar o reagendar con 1 hora de anticipación
+
+¡Te esperamos! ✨`;
+    }
+    
+    simulateWhatsAppSend(phone, message) {
+        // En desarrollo: mostrar mensaje en consola
+        // En producción: integrar con API de WhatsApp Business
+        console.log('🚀 SIMULACIÓN ENVÍO WHATSAPP:');
+        console.log('👉 A:', phone);
+        console.log('📝 Mensaje:', message);
+        
+        // Opcional: crear enlace de WhatsApp (solo para testing)
+        if (window.innerWidth > 768) {
+            const whatsappUrl = `https://web.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+            console.log('🔗 Enlace WhatsApp Web:', whatsappUrl);
+        }
     }
     
     showBrowserNotification(appointment) {
         if ("Notification" in window && Notification.permission === "granted") {
             new Notification("Vatos BarbeShop - Recordatorio", {
-                body: `Tu cita es a las ${appointment.time}`,
+                body: `Recordatorio: ${appointment.clientName} - ${appointment.date} ${appointment.time}`,
                 icon: "/icon.png"
             });
         }
@@ -58,9 +105,16 @@ function requestNotificationPermission() {
     }
 }
 
+// Configuración del barbero
+const BARBER_CONFIG = {
+    whatsapp: "+5491154243540", // REEMPLAZA CON TU NÚMERO
+    name: "Vatos Barbershop"
+};
+
 // Notificación al barbero
 async function notifyBarber(appointment) {
     try {
+        // 1. Guardar notificación en Firebase
         await db.collection('barber_notifications').add({
             type: 'new_booking',
             appointment: appointment,
@@ -68,10 +122,56 @@ async function notifyBarber(appointment) {
             timestamp: new Date().toISOString(),
             read: false
         });
+        
+        // 2. Enviar WhatsApp al barbero
+        await sendBarberWhatsApp(appointment);
+        
         console.log('🔔 Notificación enviada al barbero');
     } catch (error) {
         console.error('Error notificando al barbero:', error);
     }
+}
+
+// Enviar WhatsApp al barbero
+async function sendBarberWhatsApp(appointment) {
+    const message = formatBarberMessage(appointment);
+    
+    console.log('📱 NOTIFICACIÓN BARBERO:');
+    console.log('👉 Mensaje:', message);
+    
+    // En desarrollo: mostrar en consola
+    // En producción: integrar con API de WhatsApp
+    showToast('info', 'Nueva Reserva', 
+        `Cliente: ${appointment.clientName}\nServicio: ${appointment.service}\nFecha: ${appointment.date} ${appointment.time}`);
+    
+    // Crear enlace de WhatsApp para testing
+    if (window.innerWidth > 768) {
+        const whatsappUrl = generateWhatsAppUrl(BARBER_CONFIG.whatsapp, message);
+        console.log('🔗 Enlace WhatsApp Barbero:', whatsappUrl);
+        
+        // Opcional: abrir automáticamente (solo en desarrollo)
+        // window.open(whatsappUrl, '_blank');
+    }
+}
+
+function formatBarberMessage(appointment) {
+    return `🪒 *NUEVA RESERVA - Vatos Barbershop*
+
+👤 *Cliente:* ${appointment.clientName}
+📞 *WhatsApp:* ${appointment.clientWhatsAppDisplay || appointment.clientWhatsApp}
+✂️ *Servicio:* ${appointment.service}
+💰 *Precio:* $${parseInt(appointment.price).toLocaleString()}
+📅 *Fecha:* ${appointment.date}
+⏰ *Hora:* ${appointment.time}
+💳 *Pago:* ${appointment.payment}
+
+_Reserva realizada: ${new Date().toLocaleString('es-AR')}_`;
+}
+
+function generateWhatsAppUrl(phone, message) {
+    const encodedMessage = encodeURIComponent(message);
+    const cleanPhone = phone.replace(/\D/g, '');
+    return `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`;
 }
 
 // Cargar notificaciones del barbero
@@ -111,6 +211,9 @@ function createNotificationElement(notification, id) {
                 <p class="font-bold">📅 Nueva reserva de ${notification.appointment.clientName}</p>
                 <p class="text-sm text-gray-300">
                     ${notification.appointment.service} - ${notification.appointment.date} ${notification.appointment.time}
+                </p>
+                <p class="text-sm text-yellow-400 mt-1">
+                    <i class="fab fa-whatsapp"></i> ${notification.appointment.clientWhatsAppDisplay || 'Sin WhatsApp'}
                 </p>
             </div>
             <button onclick="markNotificationRead('${id}')" class="text-gray-400 hover:text-white">

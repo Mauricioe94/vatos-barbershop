@@ -1,4 +1,4 @@
-// Gestor de interfaz de usuario - VERSIÓN CORREGIDA
+// Gestor de interfaz de usuario
 class UIManager {
     constructor() {
         this.init();
@@ -8,48 +8,80 @@ class UIManager {
         this.setupTabNavigation();
         this.setupToastSystem();
         // Asegurar que solo el panel cliente esté visible al inicio
-        this.switchTab('client');
+        this.showClientView();
     }
     
     setupTabNavigation() {
-        document.getElementById('client-tab').addEventListener('click', () => this.switchTab('client'));
-        document.getElementById('admin-tab').addEventListener('click', () => this.switchTab('admin'));
+        document.getElementById('client-tab').addEventListener('click', () => this.showClientView());
+        document.getElementById('admin-tab').addEventListener('click', () => this.showAdminLogin());
     }
     
-    switchTab(tab) {
-        const clientView = document.getElementById('client-view');
-        const adminView = document.getElementById('admin-view');
-        const clientTab = document.getElementById('client-tab');
-        const adminTab = document.getElementById('admin-tab');
+    showClientView() {
+        // Ocultar admin view y login
+        document.getElementById('admin-view').classList.add('hidden');
+        this.hideAdminLogin();
         
-        // Remover todas las clases activas primero
-        clientView.classList.remove('active');
-        adminView.classList.remove('active');
-        clientView.classList.add('hidden');
-        adminView.classList.add('hidden');
-        clientTab.classList.remove('active', 'border-yellow-400', 'text-yellow-400');
-        adminTab.classList.remove('active', 'border-yellow-400', 'text-yellow-400');
+        // Mostrar client view
+        document.getElementById('client-view').classList.remove('hidden');
         
-        // Aplicar clases según la pestaña seleccionada
-        if (tab === 'client') {
-            clientView.classList.remove('hidden');
-            clientView.classList.add('active');
-            clientTab.classList.add('active', 'border-yellow-400', 'text-yellow-400');
-            adminTab.classList.add('text-gray-400');
-        } else {
-            adminView.classList.remove('hidden');
-            adminView.classList.add('active');
-            adminTab.classList.add('active', 'border-yellow-400', 'text-yellow-400');
-            clientTab.classList.add('text-gray-400');
-            
-            // Cargar datos del panel admin cuando se active
-            appointmentManager.loadAppointments();
-            loadBarberNotifications();
-        }
+        // Actualizar estado de pestañas
+        document.getElementById('client-tab').classList.add('border-yellow-400', 'text-yellow-400');
+        document.getElementById('client-tab').classList.remove('text-gray-400');
+        document.getElementById('admin-tab').classList.remove('border-yellow-400', 'text-yellow-400');
+        document.getElementById('admin-tab').classList.add('text-gray-400');
+    }
+    
+    showAdminLogin() {
+        // Mostrar modal de login
+        document.getElementById('admin-login').classList.remove('hidden');
+    }
+    
+    hideAdminLogin() {
+        // Ocultar modal de login
+        document.getElementById('admin-login').classList.add('hidden');
+    }
+    
+    showAdminView() {
+        // Ocultar client view y login
+        document.getElementById('client-view').classList.add('hidden');
+        this.hideAdminLogin();
+        
+        // Mostrar admin view
+        document.getElementById('admin-view').classList.remove('hidden');
+        
+        // Actualizar estado de pestañas
+        document.getElementById('admin-tab').classList.add('border-yellow-400', 'text-yellow-400');
+        document.getElementById('admin-tab').classList.remove('text-gray-400');
+        document.getElementById('client-tab').classList.remove('border-yellow-400', 'text-yellow-400');
+        document.getElementById('client-tab').classList.add('text-gray-400');
+        
+        // Cargar datos del panel admin
+        appointmentManager.loadAppointments();
+        loadBarberNotifications();
     }
     
     setupToastSystem() {
-        // El sistema de toast ya está definido en el CSS
+        // El sistema de toast ya está definido
+    }
+}
+
+// Verificar acceso admin
+function verifyAdminAccess() {
+    const inputCode = document.getElementById('admin-code').value;
+    const ADMIN_ACCESS_CODE = "Barbero123$"; // Cambiar por código real
+    
+    if (inputCode === ADMIN_ACCESS_CODE) {
+        // Código correcto - mostrar panel admin
+        uiManager.showAdminView();
+        
+        // Limpiar campo
+        document.getElementById('admin-code').value = '';
+        
+        showToast('success', 'Acceso concedido', 'Bienvenido al panel de barbero');
+    } else {
+        showToast('error', 'Acceso denegado', 'Código incorrecto');
+        document.getElementById('admin-code').value = '';
+        document.getElementById('admin-code').focus();
     }
 }
 
@@ -62,10 +94,10 @@ function showToast(type, title, message) {
     
     if (type === 'success') {
         toastIcon.className = 'fas fa-check-circle text-green-400';
-        toast.classList.add('border-green-600');
-    } else {
+    } else if (type === 'error') {
         toastIcon.className = 'fas fa-exclamation-circle text-red-400';
-        toast.classList.add('border-red-600');
+    } else {
+        toastIcon.className = 'fas fa-info-circle text-blue-400';
     }
     
     toastTitle.textContent = title;
@@ -75,7 +107,6 @@ function showToast(type, title, message) {
     
     setTimeout(() => {
         toast.classList.add('hidden');
-        toast.classList.remove('border-green-600', 'border-red-600');
     }, 5000);
 }
 

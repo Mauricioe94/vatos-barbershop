@@ -60,6 +60,46 @@ class AppointmentManager {
         this.updateBookingSummary();
     }
     
+    // NUEVA FUNCIÓN: Validar WhatsApp Argentina
+    validateArgentineWhatsApp(phone) {
+        // Limpiar el número (quitar espacios, guiones)
+        const cleanPhone = phone.replace(/\s|-/g, '');
+        
+        // Validar formato argentino: 11 1234-5678 o 112345678 (8-10 dígitos)
+        const whatsappRegex = /^(11|15|2\d|3\d|4\d|5\d|6\d|7\d|8\d|9\d)\d{6,8}$/;
+        
+        if (!whatsappRegex.test(cleanPhone)) {
+            return {
+                isValid: false,
+                message: 'Formato inválido. Usá: 11 1234-5678'
+            };
+        }
+        
+        // Formatear número para guardar (11 1234-5678 -> 5491112345678)
+        const formattedPhone = `549${cleanPhone}`;
+        
+        return {
+            isValid: true,
+            cleanNumber: formattedPhone,
+            displayNumber: this.formatPhoneDisplay(cleanPhone)
+        };
+    }
+    
+    // NUEVA FUNCIÓN: Formatear número para mostrar
+    formatPhoneDisplay(phone) {
+        const cleanPhone = phone.replace(/\D/g, '');
+        
+        if (cleanPhone.length === 8) {
+            // Formato: 1234-5678 -> 11 1234-5678
+            return `11 ${cleanPhone.substring(0, 4)}-${cleanPhone.substring(4)}`;
+        } else if (cleanPhone.length === 10) {
+            // Formato: 1123456789 -> 11 2345-6789
+            return `${cleanPhone.substring(0, 2)} ${cleanPhone.substring(2, 6)}-${cleanPhone.substring(6)}`;
+        }
+        
+        return cleanPhone;
+    }
+    
     async checkAvailability() {
         const date = document.getElementById('date').value;
         const time = document.getElementById('time').value;
@@ -114,8 +154,19 @@ class AppointmentManager {
     async handleBooking(e) {
         e.preventDefault();
         
+        // Validar WhatsApp ANTES de proceder
+        const whatsappInput = document.getElementById('clientWhatsApp').value;
+        const validation = this.validateArgentineWhatsApp(whatsappInput);
+        
+        if (!validation.isValid) {
+            showToast('error', 'WhatsApp Inválido', validation.message);
+            return;
+        }
+        
         const appointment = {
             clientName: document.getElementById('clientName').value,
+            clientWhatsApp: validation.cleanNumber, // Número formateado internacional
+            clientWhatsAppDisplay: validation.displayNumber, // Para mostrar en UI
             service: document.getElementById('selectedService').value,
             price: document.getElementById('selectedPrice').value,
             date: document.getElementById('date').value,
@@ -137,7 +188,7 @@ class AppointmentManager {
             // 3. Mostrar confirmación al usuario
             showToast('success', '¡Cita Reservada!', 
                 `Te esperamos el ${appointment.date} a las ${appointment.time}. 
-                 Recibirás un recordatorio 2 horas antes.`);
+                 Te enviaremos un recordatorio por WhatsApp.`);
             
             // 4. Reiniciar formulario
             e.target.reset();
@@ -146,9 +197,6 @@ class AppointmentManager {
             });
             document.getElementById('booking-summary').classList.add('hidden');
             document.getElementById('availability-indicator').classList.add('hidden');
-            
-            // 5. Solicitar permisos para recordatorios
-            requestNotificationPermission();
             
         } catch (error) {
             showToast('error', 'Error', 'No se pudo reservar la cita: ' + error.message);
@@ -294,6 +342,9 @@ class AppointmentManager {
                 </p>
                 <p class="appointment-detail">
                     <i class="fas fa-money-bill"></i>${appointment.payment}
+                </p>
+                <p class="appointment-detail">
+                    <i class="fab fa-whatsapp"></i>${appointment.clientWhatsAppDisplay || 'N/A'}
                 </p>
             </div>
             <div class="appointment-actions">
