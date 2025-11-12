@@ -53,7 +53,7 @@ class ReminderSystem {
     }
     
     formatReminderMessage(appointment) {
-        return `🪒 *Vatos Barbershop - Recordatorio*
+        return `🪒 *Vatos Barber Shop - Recordatorio*
 
 Hola ${appointment.clientName}! 
 
@@ -64,8 +64,8 @@ Te recordamos que tenés una cita con nosotros:
 ✂️ *Servicio:* ${appointment.service}
 💰 *Precio:* $${parseInt(appointment.price).toLocaleString()}
 
-📍 *Dirección:* [Calle Falsa 1234]
-📞 *Teléfono:* [1154243540]
+📍 *Dirección:* Quinquela Martin 714
+📞 *Teléfono:* 11 5424-3540
 
 *Importante:*
 - Llegá 5 minutos antes
@@ -90,7 +90,7 @@ Te recordamos que tenés una cita con nosotros:
     
     showBrowserNotification(appointment) {
         if ("Notification" in window && Notification.permission === "granted") {
-            new Notification("Vatos BarbeShop - Recordatorio", {
+            new Notification("Vatos Barber Shop - Recordatorio", {
                 body: `Recordatorio: ${appointment.clientName} - ${appointment.date} ${appointment.time}`,
                 icon: "/icon.png"
             });
@@ -105,10 +105,10 @@ function requestNotificationPermission() {
     }
 }
 
-// Configuración del barbero
+// Configuración del barbero - DATOS REALES
 const BARBER_CONFIG = {
-    whatsapp: "+5491154243540", // REEMPLAZA CON TU NÚMERO
-    name: "Vatos Barbershop"
+    whatsapp: "+5491154243540", // NÚMERO REAL DEL BARBERO
+    name: "Vatos Barber Shop"
 };
 
 // Notificación al barbero
@@ -118,7 +118,7 @@ async function notifyBarber(appointment) {
         await db.collection('barber_notifications').add({
             type: 'new_booking',
             appointment: appointment,
-            barbershop: 'Vatos BarbeShop',
+            barbershop: 'Vatos Barber Shop',
             timestamp: new Date().toISOString(),
             read: false
         });
@@ -155,7 +155,7 @@ async function sendBarberWhatsApp(appointment) {
 }
 
 function formatBarberMessage(appointment) {
-    return `🪒 *NUEVA RESERVA - Vatos Barbershop*
+    return `🪒 *NUEVA RESERVA - Vatos Barber Shop*
 
 👤 *Cliente:* ${appointment.clientName}
 📞 *WhatsApp:* ${appointment.clientWhatsAppDisplay || appointment.clientWhatsApp}
@@ -164,6 +164,9 @@ function formatBarberMessage(appointment) {
 📅 *Fecha:* ${appointment.date}
 ⏰ *Hora:* ${appointment.time}
 💳 *Pago:* ${appointment.payment}
+
+📍 *Dirección:* Quinquela Martin 714
+📞 *Teléfono:* 11 5424-3540
 
 _Reserva realizada: ${new Date().toLocaleString('es-AR')}_`;
 }
@@ -178,7 +181,7 @@ function generateWhatsAppUrl(phone, message) {
 async function loadBarberNotifications() {
     try {
         const snapshot = await db.collection('barber_notifications')
-            .where('barbershop', '==', 'Vatos BarbeShop')
+            .where('barbershop', '==', 'Vatos Barber Shop')
             .orderBy('timestamp', 'desc')
             .limit(10)
             .get();
