@@ -12,17 +12,17 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Configuración de horarios
+// Configuración de horarios - Último servicio a las 19:30
 const businessHours = {
-    start: 9,    // 9:00 AM
-    end: 18,     // 6:00 PM
-    interval: 30 // minutos entre turnos
+    start: 9,      // 9:00 AM
+    end: 19,       // Hasta las 19:30 (19 en formato 24h + minutos)
+    interval: 30   // minutos entre turnos
 };
 
-// Mapeo de precios de servicios
+// Mapeo de precios de servicios - ACTUALIZADO
 const servicePrices = {
-    'Degradado Profesional': 10000,
-    'Colorometría': 45000,
-    'Recorte de Barba': 7000,
-    'Combo Full': 15000
+    'Degradado Profesional': 9000,      // Antes: 10000
+    'Colorometría': 45000,              // Sin cambios
+    'Recorte de Barba': 3500,           // Antes: 7000  
+    'Combo Full': 12000                 // Antes: 15000
 };
